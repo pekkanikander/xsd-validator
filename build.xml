@@ -66,8 +66,8 @@
     <javac srcdir="${src.dir}" 
            destdir="${build.dir}"
            classpathref="classpath"
-           source="1.5"
-           target="1.5"
+           source="1.8"
+           target="1.8"
            includeantruntime="false"/>
 
   </target>

@@ -8,4 +8,5 @@ if [[ -n "${callPath}" ]]; then
   callPath=${callPath}/
 fi
 
+export XERCES_IMPLEMENTATION="`realpath ${callPath}../xerces-2_12_0/xercesImpl.jar`"
 java -jar ${callPath}lib/xsdv.jar "$@"

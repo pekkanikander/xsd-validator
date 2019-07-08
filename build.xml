@@ -29,11 +29,15 @@
   <property name="package" value="xsdvalidator"/>
   <property name="version" value="1.0" />
 
+  <property name="xerces.dir" value="../xerces-2_12_0" />
+
 <!-- Classpath -->
 
   <path id="classpath">
       <pathelement location="${build.dir}"/>
       <pathelement location="${build.dir}/xsdv.jar"/>
+      <pathelement location="${xerces.dir}/xercesImpl.jar"/>
+      <pathelement location="${xerces.dir}/xml-apis.jar"/>
 
       <!--<fileset dir="${lib.dir}">
 	  <include name="*.jar"/>

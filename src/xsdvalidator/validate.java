@@ -19,8 +19,11 @@ package xsdvalidator;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.net.MalformedURLException;
+import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -40,19 +43,64 @@ public class validate {
     private final static int VALIDATION_FAIL = 1;
     private final static int ERROR_READING_SCHEMA = 2;
     private final static int ERROR_READING_XML = 3;
+    private final static int ERROR_USING_XERCES = 4;
     
     private static String mXSDFileName;
     private static String mXMLFileName;
     
+    // See https://stackoverflow.com/questions/22528848/java-lang-illegalargumentexception-no-schemafactory-that-implements-the-schempa
+    private static String SCHEMA_NS_URI = XMLConstants.W3C_XML_SCHEMA_NS_URI;
+
+    /**
+     * Returns a schema factory
+     */
+    private static SchemaFactory getSchemaFactory(final String xerces) {
+
+	if (null == xerces) {
+	    return SchemaFactory.newInstance(SCHEMA_NS_URI);
+	}
+
+	URL[] xercesURLs = null;
+
+	try {
+	    xercesURLs = new URL[] { new URL("file://" + xerces) };
+        } catch (MalformedURLException e) {
+            System.err.println("Error URL syntax: " + System.getenv("XERCES_IMPLEMENTATION"));
+            System.err.println(e.getMessage());
+            System.exit(ERROR_USING_XERCES);
+	};
+
+	final ClassLoader xercesClassLoader = new URLClassLoader(xercesURLs, ClassLoader.getSystemClassLoader());
+
+	try {
+	    Class Version = xercesClassLoader.loadClass("org.apache.xerces.impl.Version");
+	    Method getVersion = Version.getMethod("getVersion");
+	    String version = (String)(getVersion.invoke(null));
+
+	    System.out.println(PROGRAM_NAME + ": using Xerces version " + version);
+	} catch (Exception e) {
+	    System.err.print("Error loading Xerces version: ");
+	    System.err.println(e.getMessage());
+	    System.exit(ERROR_USING_XERCES);
+	};
+
+	return SchemaFactory.newInstance(
+	    SCHEMA_NS_URI,
+	    "org.apache.xerces.jaxp.validation.XMLSchemaFactory",
+	    xercesClassLoader);
+    }
+
     /**
      * @param args
      */
     public static void main(String[] args) {
         
+
         parseArgs(args);
-        SchemaFactory factory = SchemaFactory.newInstance(
-                "http://www.w3.org/2001/XMLSchema");
-            
+
+	final String xerces = System.getenv("XERCES_IMPLEMENTATION");
+	SchemaFactory factory = getSchemaFactory(xerces);
+
         File XMLFile = new File(mXMLFileName); 
 
         try { 

@@ -65,7 +65,7 @@ public class validate {
 	try {
 	    xercesURLs = new URL[] { new URL("file://" + xerces) };
         } catch (MalformedURLException e) {
-            System.err.println("Error URL syntax: " + System.getenv("XERCES_IMPLEMENTATION"));
+            System.err.println("Error forming URL from the file path: " + xerces);
             System.err.println(e.getMessage());
             System.exit(ERROR_USING_XERCES);
 	};
@@ -140,6 +140,8 @@ public class validate {
             } catch (SAXException sch) {
                 System.err.println("Error reading XML Schema: " + mXSDFileName);
                 System.err.println(sch.getMessage());
+                System.err.println("Exception: " + sch.getException());
+                System.err.println("Cause: " + sch.getCause());
                 System.exit(ERROR_READING_SCHEMA);
             }
         } catch (MalformedURLException e) {

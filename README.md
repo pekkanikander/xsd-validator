@@ -7,6 +7,7 @@ Requires Java to be installed.
 
 Usage on Mac and Linux: 
 ```bash
+ant jar
 ./xsdv.sh test.xsd test.xml
 ```
 
